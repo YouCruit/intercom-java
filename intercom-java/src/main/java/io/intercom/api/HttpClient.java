@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.CharStreams;
+
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +63,8 @@ class HttpClient {
     private final String apiKey = Intercom.getApiKey();
 
     private final HttpConnectorSupplier connection = Intercom.getHttpConnectorSupplier();
+
+    private final Base64 base64 = new Base64(1024);
 
     public HttpClient(URI uri) {
         this(uri, Maps.<String, String>newHashMap());
@@ -226,7 +230,7 @@ class HttpClient {
             headers.put("Authorization", "Bearer " + apiKey);
         } else if (Intercom.getAuthScheme().equals(Intercom.AUTH_BASIC)) {
             final String authString = Intercom.getAppID() + ":" + Intercom.getApiKey();
-            headers.put("Authorization", "Basic " + Base64.encodeBase64String(authString.getBytes()));
+            headers.put("Authorization", "Basic " + StringUtils.newStringUtf8(base64.encode(authString.getBytes())));
         }
         return headers;
     }
