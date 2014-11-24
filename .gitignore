@@ -11,3 +11,10 @@ build
 *.war
 *.ear
 hs_err_pid*
+intercom-java/bin
+intercom-java/*.classpath
+intercom-java/*.project
+intercom-java/.settings/gradle/org.springsource.ide.eclipse.gradle.core.prefs
+intercom-java/.settings/gradle/org.springsource.ide.eclipse.gradle.refresh.prefs
+.settings/gradle/org.springsource.ide.eclipse.gradle.core.import.prefs
+.settings/gradle/org.springsource.ide.eclipse.gradle.core.prefs
