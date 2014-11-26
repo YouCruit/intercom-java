@@ -230,7 +230,7 @@ class HttpClient {
             headers.put("Authorization", "Bearer " + apiKey);
         } else if (Intercom.getAuthScheme().equals(Intercom.AUTH_BASIC)) {
             final String authString = Intercom.getAppID() + ":" + Intercom.getApiKey();
-            headers.put("Authorization", "Basic " + StringUtils.newStringUtf8(base64.encode(authString.getBytes())));
+            headers.put("Authorization", "Basic " + StringUtils.newStringUtf8(base64.encode(authString.getBytes())).trim());
         }
         return headers;
     }
