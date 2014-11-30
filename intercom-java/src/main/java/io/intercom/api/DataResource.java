@@ -20,6 +20,11 @@ abstract class DataResource {
         return resource.post(response, entity);
     }
 
+    public static <T> void create(T entity, String collectionPath) {
+        final HttpClient resource = new HttpClient(UriBuilder.newBuilder().path(collectionPath).build());
+        resource.post(entity);
+    }
+
     public static <T, R> R update(T entity, String collectionPath, Class<R> response) {
         final HttpClient resource = new HttpClient(UriBuilder.newBuilder().path(collectionPath).build());
         return resource.post(response, entity);

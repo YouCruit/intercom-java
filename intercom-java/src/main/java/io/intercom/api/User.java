@@ -62,6 +62,28 @@ public class User extends TypedData implements Replier {
         return DataResource.create(UserUpdate.buildFrom(user), "users", User.class);
     }
 
+    public static void bulkCreate(List<User> users)
+            throws AuthorizationException, ClientException, ServerException, InvalidException, RateLimitException {
+        List<UserUpdate> userList = new ArrayList<UserUpdate>();
+        for(User u : users) {
+            userList.add(UserUpdate.buildFrom(u));
+        }
+        if(userList.size() < 50) {
+            DataResource.create(userList, "users/bulk", String.class);
+        } else {
+            int loops = userList.size() / 50;
+            int pos = 0;
+            for(int i=0; i<loops; i++) {
+                int oldPos = pos;
+                pos = pos + 50;
+                if((userList.size()-1) <= pos) {
+                    pos = userList.size()-1;
+                }
+                DataResource.create(userList.subList(oldPos, pos),"users/bulk", String.class);
+            }
+        }
+    }
+
     public static User update(User user) throws InvalidException, AuthorizationException {
         // only send fields the server allows for update
         return DataResource.update(UserUpdate.buildFrom(user), "users", User.class);

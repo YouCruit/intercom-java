@@ -102,6 +102,20 @@ class HttpClient {
         }
     }
 
+    public <E> void post(E entity) {
+        headers.put("Content-Type", APPLICATION_JSON);
+        HttpURLConnection conn = null;
+        try {
+            conn = initializeConnection(uri, "POST");
+            prepareRequestEntity(entity, conn);
+            runRequest(uri, conn);
+        } catch (IOException e) {
+            throwLocalException(e);
+        } finally {
+            IOUtils.disconnectQuietly(conn);
+        }
+    }
+
     public <T> T delete(Class<T> reqres) {
         HttpURLConnection conn = null;
         try {
@@ -149,6 +163,14 @@ class HttpClient {
         } else {
             // errors are redirects for now
             return handleError(uri, conn, responseCode);
+        }
+    }
+
+    private void runRequest(URI uri, HttpURLConnection conn) throws IOException {
+        conn.connect();
+        final int responseCode = conn.getResponseCode();
+        if (!(responseCode >= 200 && responseCode < 300)) {
+            handleError(uri, conn, responseCode);
         }
     }
 
