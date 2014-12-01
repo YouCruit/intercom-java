@@ -8,8 +8,10 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -68,20 +70,21 @@ public class User extends TypedData implements Replier {
         for(User u : users) {
             userList.add(UserUpdate.buildFrom(u));
         }
-        if(userList.size() < 50) {
-            DataResource.create(userList, "users/bulk", String.class);
-        } else {
-            int loops = userList.size() / 50;
-            int pos = 0;
-            for(int i=0; i<loops; i++) {
-                int oldPos = pos;
-                pos = pos + 50;
-                if((userList.size()-1) <= pos) {
-                    pos = userList.size()-1;
-                }
-                DataResource.create(userList.subList(oldPos, pos),"users/bulk", String.class);
+        int size = userList.size();
+        int loops = (new BigDecimal(size).divide(new BigDecimal(50))).setScale(0, BigDecimal.ROUND_UP).intValue();
+        int pos = -1;
+        for(int i=0; i<loops; i++) {
+            int oldPos = pos + 1;
+            pos = pos + 50;
+            if((size-1) <= pos) {
+                pos = size-1;
             }
+            DataResource.create(createBulkUserUpdateObject(userList.subList(oldPos, pos)),"users/bulk", false);
         }
+    }
+
+    private static Map<String, List<UserUpdate>> createBulkUserUpdateObject(final List<UserUpdate> userList) {
+        return Collections.singletonMap("users", userList);
     }
 
     public static User update(User user) throws InvalidException, AuthorizationException {
