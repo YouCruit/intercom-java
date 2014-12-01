@@ -64,7 +64,16 @@ class UriBuilder {
     }
 
     public UriBuilder path(String path) {
-        uri.append("/").append(urlEncode(path));
+        path(path, true);
+        return this;
+    }
+
+    public UriBuilder path(final String path, final boolean encode) {
+        String formattedPath = path;
+        if(encode) {
+            formattedPath = urlEncode(path);
+        }
+        uri.append("/").append(formattedPath);
         return this;
     }
 
