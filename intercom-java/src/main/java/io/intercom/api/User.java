@@ -15,11 +15,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("UnusedDeclaration")
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class User extends TypedData implements Replier {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(User.class);
+    
     private static final Map<String, String> SENTINEL = Maps.newHashMap();
 
     private static List<CompanyWithStringPlan> buildUserUpdateCompanies(User user) {
@@ -73,14 +77,18 @@ public class User extends TypedData implements Replier {
         int size = userList.size();
         int loops = (new BigDecimal(size).divide(new BigDecimal(50))).setScale(0, BigDecimal.ROUND_UP).intValue();
         int pos = -1;
+        LOGGER.trace("bulkCreate starting ("  + loops + " number of loops).");
         for(int i=0; i<loops; i++) {
             int oldPos = pos + 1;
             pos = pos + 50;
             if((size-1) <= pos) {
                 pos = size-1;
             }
+            LOGGER.trace("starting bulkcreate of loop: " + i);
             DataResource.create(createBulkUserUpdateObject(userList.subList(oldPos, pos)),"users/bulk", false);
+            LOGGER.trace("done bulkcreate of loop: " + i);
         }
+        LOGGER.trace("bulkCreate done.");
     }
 
     private static Map<String, List<UserUpdate>> createBulkUserUpdateObject(final List<UserUpdate> userList) {
@@ -107,7 +115,6 @@ public class User extends TypedData implements Replier {
         return DataResource.list(SENTINEL, "users", UserCollection.class);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     static class UserUpdate extends TypedData {
