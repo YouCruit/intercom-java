@@ -85,7 +85,7 @@ public class User extends TypedData implements Replier {
                 pos = size-1;
             }
             LOGGER.trace("starting bulkcreate of loop: " + i);
-            DataResource.create(createBulkUserUpdateObject(userList.subList(oldPos, pos)),"users/bulk", false);
+            DataResource.create(createBulkUserUpdateObject(userList.subList(oldPos, pos+1)),"users/bulk", false);
             LOGGER.trace("done bulkcreate of loop: " + i);
         }
         LOGGER.trace("bulkCreate done.");
