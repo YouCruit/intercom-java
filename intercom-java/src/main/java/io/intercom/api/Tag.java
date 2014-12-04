@@ -131,8 +131,8 @@ public class Tag extends TypedData {
             } else {
                 logger.warn("no identifiers found for company tag target, skipping [" + tag + "] [" + company.toString() + "]");
             }
-            taggableCollection.setCompanies(companiesLite);
         }
+        taggableCollection.setCompanies(companiesLite);
         return taggableCollection;
     }
 
