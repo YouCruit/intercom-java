@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("UnusedDeclaration")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Tag extends TypedData {
@@ -76,20 +75,23 @@ public class Tag extends TypedData {
             final String email = user.getEmail();
             final String userId = user.getUserId();
 
-            if (user.isUntag()) {
-                userMap.put("untag", true);
-            }
-
+            
             if (!Strings.isNullOrEmpty(id)) {
                 userMap.put("id", id);
-                usersLite.add(userMap);
-            } else if (!Strings.isNullOrEmpty(email)) {
+            }
+            if (!Strings.isNullOrEmpty(email)) {
                 userMap.put("email", email);
-                usersLite.add(userMap);
-            } else if (!Strings.isNullOrEmpty(userId)) {
+            }
+            if (!Strings.isNullOrEmpty(userId)) {
                 userMap.put("user_id", userId);
-                usersLite.add(userMap);
-            } else {
+            } 
+            
+            if(!userMap.isEmpty()) {
+        	if (user.isUntag()) {
+                    userMap.put("untag", true);
+                }
+        	usersLite.add(userMap);
+            }else{
                 logger.warn("no identifiers found for user tag target, skipping [" + tag + "] [" + user.toString() + "]");
             }
         }
@@ -111,18 +113,20 @@ public class Tag extends TypedData {
             final String id = company.getId();
             final String name = company.getName();
 
-            if (company.isUntag()) {
-                companyMap.put("untag", true);
-            }
-
             if (!Strings.isNullOrEmpty(companyID)) {
                 companyMap.put("company_id", companyID);
-                companiesLite.add(companyMap);
-            } else if (!Strings.isNullOrEmpty(id)) {
+            }
+            if (!Strings.isNullOrEmpty(id)) {
                 companyMap.put("id", id);
-                companiesLite.add(companyMap);
-            } else if (!Strings.isNullOrEmpty(name)) {
+            }
+            if (!Strings.isNullOrEmpty(name)) {
                 companyMap.put("name", name);
+            } 
+            
+            if(!companyMap.isEmpty()){
+        	 if (company.isUntag()) {
+                     companyMap.put("untag", true);
+                 }
                 companiesLite.add(companyMap);
             } else {
                 logger.warn("no identifiers found for company tag target, skipping [" + tag + "] [" + company.toString() + "]");
@@ -132,7 +136,6 @@ public class Tag extends TypedData {
         return taggableCollection;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     static class TaggableCollection extends Tag {
@@ -187,7 +190,6 @@ public class Tag extends TypedData {
     }
 
 
-    @SuppressWarnings("UnusedReturnValue")
     @VisibleForTesting
     Tag setId(String id) {
         this.id = id;
