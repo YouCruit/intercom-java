@@ -139,7 +139,7 @@ class HttpClient {
         try {
             stream = conn.getOutputStream();
             if (logger.isDebugEnabled()) {
-                logger.info(String.format("api server request --\n%s\n-- ", objectMapper.writeValueAsString(entity)));
+                logger.trace(String.format("api server request --\n%s\n-- ", objectMapper.writeValueAsString(entity)));
             }
             objectMapper.writeValue(stream, entity);
         } finally {
@@ -200,7 +200,11 @@ class HttpClient {
         try {
             if (logger.isDebugEnabled()) {
                 final String text = CharStreams.toString(new InputStreamReader(entityStream));
-                logger.debug("api server response status[{}] --\n{}\n-- ", responseCode, text);
+                if(responseCode==200){
+                    logger.trace("api server response status[{}] --\n{}\n-- ", responseCode, text);
+                }else{
+                    logger.debug("api server response status[{}] --\n{}\n-- ", responseCode, text);
+                }
                 return objectMapper.readValue(text, entityType);
             } else {
                 return objectMapper.readValue(entityStream, entityType);
