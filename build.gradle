@@ -64,7 +64,7 @@ subprojects {
     repositories {
       mavenDeployer {
         configuration = configurations.deployerJars
-        repository(url: "dav:https://repository-youcruit.forge.cloudbees.com/snapshot/") {
+        repository(url: "dav:https://repository-youcruit.forge.cloudbees.com/release/") {
           authentication(userName: cloudbeesUser, password: cloudbeesPassword)
         }
       }
