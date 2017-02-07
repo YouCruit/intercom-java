@@ -33,6 +33,13 @@ subprojects {
     mavenCentral()
   }
 
+  ext.cloudbeesUser = System.properties['cloudbeesUser']
+  ext.cloudbeesPassword = System.properties['cloudbeesPassword']
+
+  configurations {
+    deployerJars
+  }
+
   apply plugin: 'maven'
   apply plugin: 'maven-publish'
   apply plugin: 'java'
@@ -51,9 +58,19 @@ subprojects {
     compile 'commons-codec:commons-codec:1.9'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     testCompile 'junit:junit:4.11'
+    deployerJars 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.12'
+  }
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        configuration = configurations.deployerJars
+        repository(url: "dav:https://repository-youcruit.forge.cloudbees.com/snapshot/") {
+          authentication(userName: cloudbeesUser, password: cloudbeesPassword)
+        }
+      }
+    }
   }
 }
-
 
 task wrapper(type: Wrapper) {
   gradleVersion = '2.0'
