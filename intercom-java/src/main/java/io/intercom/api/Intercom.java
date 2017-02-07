@@ -1,6 +1,12 @@
 package io.intercom.api;
 
+import java.io.File;
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
+import okhttp3.OkHttpClient.Builder;
 
 public class Intercom {
 
@@ -31,7 +37,7 @@ public class Intercom {
 
     private static volatile boolean requestUsingCaches = false;
 
-    private static volatile HttpConnectorSupplier httpConnectorSupplier = HttpConnectorSupplier.defaultSupplier;
+    private static volatile OkHttpClient httpClient;
 
     public static long currentTimestamp() {
         return System.currentTimeMillis()/1000;
@@ -63,12 +69,20 @@ public class Intercom {
         Intercom.requestUsingCaches = requestUsingCaches;
     }
 
-    public static HttpConnectorSupplier getHttpConnectorSupplier() {
-        return httpConnectorSupplier;
+    public static OkHttpClient getHttpClient() {
+        if (httpClient == null) {
+	    if (Intercom.isRequestUsingCaches()) {
+		throw new IllegalArgumentException("Not implemented");
+	    }
+	    httpClient = new Builder().connectTimeout(Intercom.getConnectionTimeout(), TimeUnit.MILLISECONDS)
+				      .readTimeout(Intercom.getRequestTimeout(), TimeUnit.MILLISECONDS)
+				      .build();
+	}
+        return httpClient;
     }
 
-    public static void setHttpConnectorSupplier(HttpConnectorSupplier supplier) {
-        Intercom.httpConnectorSupplier = supplier;
+    public static void setHttpClient(OkHttpClient httpClient) {
+        Intercom.httpClient = httpClient;
     }
 
     public static String getAppID() {
