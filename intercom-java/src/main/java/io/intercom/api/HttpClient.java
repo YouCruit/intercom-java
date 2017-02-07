@@ -132,11 +132,17 @@ class HttpClient {
     }
 
     private <T> T runRequest(JavaType javaType, Request request) throws IOException {
-        try (Response response = okHttpClient.newCall(request).execute()) {
+	Response response = null;
+        try {
+	    response = okHttpClient.newCall(request).execute();
 	    if (response.isSuccessful()) {
 		return handleSuccess(javaType, response);
 	    } else {
 		return handleError(response);
+	    }
+	} finally {
+	    if (response != null) {
+	        response.body().close();
 	    }
 	}
     }
